@@ -118,7 +118,7 @@ mysqli_close($conn);
                 return false;
             }
 
-            if (age < 1) {
+            if (age < 1 && age > 120) {
                 alert("Age must be a positive number.");
                 return false;
             }
