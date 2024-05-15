@@ -1,6 +1,31 @@
 <?php
 session_start();
 
+function caesarEncrypt($str, $sdv) {
+    if (!ctype_alpha($str)) {
+        return $str;
+    }
+    $sdv = $sdv % 26;
+    if ($sdv < 0) {0
+        $sdv += 26;
+    }
+    $output = '';
+    $length = strlen($str);
+    for ($i = 0; $i < $length; $i++) {
+        $ascii = ord($str[$i]);
+        if (ctype_upper($str[$i])) {
+            $output .= chr((($ascii - 65 + $sdv) % 26) + 65);
+        } else {
+            $output .= chr((($ascii - 97 + $sdv) % 26) + 97);
+        }
+    }
+    return $output;
+}
+
+function caesarDecrypt($str, $sdv) {
+    return caesarEncrypt($str, 26 - $sdv);
+}
+
 // Check if form is submitted
 if(isset($_POST['submit'])){
     $servername = "localhost";
@@ -35,9 +60,7 @@ if(isset($_POST['submit'])){
         $row = mysqli_fetch_assoc($result);
 
         // Decrypt the stored password
-        $encryptionKey = "2b7e151628aed2a6abf7158809cf4f3c"; // Change this to your own secret key
-        $iv = substr($encryptionKey, 0, 16); // Use the first 16 bytes of the encryption key as the IV
-        $decryptedPassword = openssl_decrypt($row['password'], "aes-256-cbc", $encryptionKey, 0, $iv);
+        $decryptedPassword = caesarDecrypt($password, 4)
         // Verify password
         if($password === $decryptedPassword) {
             $_SESSION['loggedin'] = true;

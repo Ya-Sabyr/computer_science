@@ -1,5 +1,28 @@
 <?php
-$encryptionKey = "2b7e151628aed2a6abf7158809cf4f3c"; // Replace "your_encryption_key_here" with your actual encryption key
+function caesarEncrypt($str, $sdv) {
+    if (!ctype_alpha($str)) {
+        return $str;
+    }
+    $sdv = $sdv % 26;
+    if ($sdv < 0) {0
+        $sdv += 26;
+    }
+    $output = '';
+    $length = strlen($str);
+    for ($i = 0; $i < $length; $i++) {
+        $ascii = ord($str[$i]);
+        if (ctype_upper($str[$i])) {
+            $output .= chr((($ascii - 65 + $sdv) % 26) + 65);
+        } else {
+            $output .= chr((($ascii - 97 + $sdv) % 26) + 97);
+        }
+    }
+    return $output;
+}
+
+function caesarDecrypt($str, $sdv) {
+    return caesarEncrypt($str, 26 - $sdv);
+}
 
 $servername = "localhost";
 $username = "root";
@@ -24,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
         $encrypted_password = $row['password'];
 
         // Decrypt the password
-        $decrypted_password = openssl_decrypt($encrypted_password, "aes-256-cbc", $encryptionKey, 0, $encryptionKey);
+        $decrypted_password = caesarDecrypt($password, 4)
 
         // Display the decrypted password to the user
         echo "Your password is: $decrypted_password";

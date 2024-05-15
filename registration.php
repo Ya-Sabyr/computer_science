@@ -46,13 +46,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
+    function caesarEncrypt($str, $sdv) {
+        if (!ctype_alpha($str)) {
+            return $str;
+        }
+        $sdv = $sdv % 26;
+        if ($sdv < 0) {0
+            $sdv += 26;
+        }
+        $output = '';
+        $length = strlen($str);
+        for ($i = 0; $i < $length; $i++) {
+            $ascii = ord($str[$i]);
+            if (ctype_upper($str[$i])) {
+                $output .= chr((($ascii - 65 + $sdv) % 26) + 65);
+            } else {
+                $output .= chr((($ascii - 97 + $sdv) % 26) + 97);
+            }
+        }
+        return $output;
+    }
+
     // Sanitize inputs
     $username = mysqli_real_escape_string($conn, $username);
     $email = mysqli_real_escape_string($conn, $email);
 
     // Encrypt password using AES encryption
-    $encryptionKey = "2b7e151628aed2a6abf7158809cf4f3c"; // Change this to your own secret key
-    $encryptedPassword = openssl_encrypt($password, "aes-256-cbc", $encryptionKey, 0, $encryptionKey);
+    $encryptedPassword = caesarEncrypt($password, 4);
 
     // Insert user data into the database
     $sql = "INSERT INTO authentication (user_name, password, email, admin) VALUES ('$username', '$encryptedPassword', '$email', '$admin')";
